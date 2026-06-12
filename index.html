@@ -1,0 +1,920 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Colour Atlas</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,600&family=Archivo:wght@400;500;600&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+
+<style>
+:root{
+  --bg:#000000;
+  --ink:#f2f0ec;
+  --ink-dim:#9a978f;
+  --ink-faint:#55534e;
+  --hairline:#26251f;
+  --panel:#0b0b09;
+  --serif:"Fraunces", Georgia, serif;
+  --sans:"Archivo", -apple-system, "Helvetica Neue", Arial, sans-serif;
+  --max:1120px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  *,*::before,*::after{animation:none!important;transition:none!important}
+}
+body{
+  background:var(--bg);
+  color:var(--ink);
+  font-family:var(--sans);
+  font-size:15px;
+  line-height:1.65;
+  -webkit-font-smoothing:antialiased;
+}
+::selection{background:var(--ink);color:var(--bg)}
+a{color:var(--ink);text-decoration:none}
+a:hover{color:var(--ink-dim)}
+:focus-visible{outline:1px solid var(--ink);outline-offset:3px}
+
+.wrap{max-width:var(--max);margin:0 auto;padding:0 24px}
+
+/* ---------- header ---------- */
+header{
+  position:sticky;top:0;z-index:1200;
+  background:rgba(0,0,0,.92);
+  backdrop-filter:blur(8px);
+  border-bottom:1px solid var(--hairline);
+}
+.header-inner{
+  display:flex;align-items:baseline;justify-content:space-between;
+  padding:18px 24px;max-width:var(--max);margin:0 auto;
+}
+.wordmark{
+  font-family:var(--serif);font-weight:600;font-size:17px;
+  letter-spacing:.01em;
+}
+nav{display:flex;gap:28px;font-size:12.5px;letter-spacing:.14em;text-transform:uppercase}
+nav a{color:var(--ink-dim)}
+nav a:hover{color:var(--ink)}
+
+/* the horizon band — grey until a palette is generated */
+#horizon{
+  height:5px;width:100%;
+  background:linear-gradient(90deg,#1c1c1a,#2e2d29,#1c1c1a);
+}
+
+/* ---------- hero ---------- */
+.hero{padding:110px 0 90px;border-bottom:1px solid var(--hairline)}
+.hero h1{
+  font-family:var(--serif);font-weight:300;
+  font-size:clamp(34px,5.6vw,64px);
+  line-height:1.12;letter-spacing:-.01em;
+  max-width:17ch;
+}
+.hero h1 em{font-style:italic;font-weight:400}
+.hero p{
+  margin-top:28px;max-width:54ch;color:var(--ink-dim);font-size:16px;
+}
+.hero .assurance{
+  margin-top:36px;font-size:12px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-faint);
+}
+
+/* ---------- sections ---------- */
+section{padding:90px 0;border-bottom:1px solid var(--hairline)}
+.eyebrow{
+  font-size:11.5px;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--ink-faint);margin-bottom:18px;
+}
+h2{
+  font-family:var(--serif);font-weight:400;font-size:clamp(24px,3vw,34px);
+  line-height:1.2;margin-bottom:28px;letter-spacing:-.005em;
+}
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:64px}
+@media(max-width:840px){.cols{grid-template-columns:1fr;gap:48px}}
+
+.placeholder-note{
+  display:inline-block;margin-bottom:14px;
+  font-size:11px;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--bg);background:var(--ink-dim);padding:3px 8px;
+}
+.about-copy p{color:var(--ink-dim);margin-bottom:18px;max-width:58ch}
+
+.how-steps{list-style:none}
+.how-steps li{
+  display:grid;grid-template-columns:54px 1fr;gap:18px;
+  padding:22px 0;border-top:1px solid var(--hairline);
+}
+.how-steps li:last-child{border-bottom:1px solid var(--hairline)}
+.how-steps .n{
+  font-family:var(--serif);font-style:italic;font-size:20px;color:var(--ink-faint);
+}
+.how-steps h3{font-size:14px;font-weight:600;letter-spacing:.02em;margin-bottom:6px}
+.how-steps p{color:var(--ink-dim);font-size:14px}
+
+/* ---------- contribute ---------- */
+.step{
+  border:1px solid var(--hairline);background:var(--panel);
+  padding:34px;margin-bottom:22px;
+}
+.step-label{
+  font-family:var(--serif);font-style:italic;font-size:15px;color:var(--ink-faint);
+  margin-bottom:6px;
+}
+.step h3{font-size:16px;font-weight:600;margin-bottom:8px}
+.step .hint{color:var(--ink-dim);font-size:14px;max-width:62ch}
+
+.dropzone{
+  margin-top:24px;border:1px dashed var(--ink-faint);
+  padding:46px 24px;text-align:center;cursor:pointer;
+  transition:border-color .15s ease;
+}
+.dropzone:hover,.dropzone.dragging{border-color:var(--ink)}
+.dropzone p{color:var(--ink-dim);font-size:14px}
+.dropzone .count{
+  font-family:var(--serif);font-size:30px;font-weight:300;color:var(--ink);
+  display:block;margin-bottom:6px;
+}
+input[type=file]{display:none}
+
+button{
+  font-family:var(--sans);font-size:12.5px;letter-spacing:.14em;text-transform:uppercase;
+  background:var(--ink);color:var(--bg);border:1px solid var(--ink);
+  padding:13px 28px;cursor:pointer;
+}
+button:hover{background:transparent;color:var(--ink)}
+button:disabled{
+  background:transparent;color:var(--ink-faint);border-color:var(--hairline);
+  cursor:not-allowed;
+}
+button.ghost{background:transparent;color:var(--ink);border:1px solid var(--ink-faint)}
+button.ghost:hover{border-color:var(--ink)}
+
+.progress{margin-top:18px;font-size:13px;color:var(--ink-dim);min-height:20px}
+
+.palettes{
+  display:grid;grid-template-columns:1fr 1fr;gap:28px;margin-top:30px;
+}
+@media(max-width:760px){.palettes{grid-template-columns:1fr}}
+.palette-card{display:none}
+.palette-card.show{display:block}
+.palette-card canvas{
+  width:100%;height:auto;display:block;border:1px solid var(--hairline);
+  background:#050505;
+}
+.palette-card figcaption{
+  margin-top:12px;font-size:12px;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--ink-dim);display:flex;justify-content:space-between;align-items:baseline;gap:12px;
+}
+.palette-card figcaption a{
+  color:var(--ink);border-bottom:1px solid var(--ink-faint);font-size:11.5px;
+}
+#ratioLine{margin-top:22px;font-family:var(--serif);font-style:italic;font-size:17px;color:var(--ink-dim);display:none}
+
+/* location */
+.loc-grid{display:grid;grid-template-columns:1fr 1fr;gap:28px;margin-top:24px}
+@media(max-width:760px){.loc-grid{grid-template-columns:1fr}}
+label{display:block;font-size:11.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-dim);margin:18px 0 8px}
+label:first-child{margin-top:0}
+input[type=text],select,textarea{
+  width:100%;background:transparent;border:1px solid var(--ink-faint);
+  color:var(--ink);font-family:var(--sans);font-size:14px;padding:12px 14px;
+}
+input[type=text]:focus,select:focus,textarea:focus{outline:none;border-color:var(--ink)}
+select{appearance:none;background-image:linear-gradient(45deg,transparent 50%,var(--ink-dim) 50%),linear-gradient(135deg,var(--ink-dim) 50%,transparent 50%);background-position:calc(100% - 18px) 50%,calc(100% - 13px) 50%;background-size:5px 5px;background-repeat:no-repeat}
+select option{background:#0b0b09;color:var(--ink)}
+textarea{resize:vertical;min-height:96px}
+.char-count{font-size:11px;color:var(--ink-faint);text-align:right;margin-top:6px}
+#pickMap{height:300px;border:1px solid var(--hairline);background:#050505;margin-top:14px}
+.geo-row{display:flex;gap:10px}
+.geo-row input{flex:1}
+.geo-row button{padding:0 20px;white-space:nowrap}
+.geo-note{margin-top:10px;font-size:11.5px;color:var(--ink-faint);line-height:1.5}
+.cell-readout{margin-top:12px;font-size:12.5px;color:var(--ink-dim)}
+.cell-readout strong{color:var(--ink);font-weight:500}
+
+/* privacy */
+.privacy-grid{display:grid;grid-template-columns:1fr 1fr;gap:0;border:1px solid var(--hairline);margin-top:24px}
+@media(max-width:700px){.privacy-grid{grid-template-columns:1fr}}
+.privacy-col{padding:26px 28px}
+.privacy-col:first-child{border-right:1px solid var(--hairline)}
+@media(max-width:700px){.privacy-col:first-child{border-right:none;border-bottom:1px solid var(--hairline)}}
+.privacy-col h4{font-size:12px;letter-spacing:.16em;text-transform:uppercase;margin-bottom:14px}
+.privacy-col ul{list-style:none;font-size:14px;color:var(--ink-dim)}
+.privacy-col li{padding:5px 0}
+.privacy-col .never h4{color:var(--ink-dim)}
+.privacy-col.never li{text-decoration:line-through;text-decoration-color:var(--ink-faint)}
+
+.submit-row{margin-top:30px;display:flex;gap:16px;align-items:center;flex-wrap:wrap}
+#submitNote{font-size:13px;color:var(--ink-dim)}
+details.payload{margin-top:22px;border:1px solid var(--hairline)}
+details.payload summary{
+  cursor:pointer;padding:12px 16px;font-size:12px;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--ink-dim);list-style:none;
+}
+details.payload summary::-webkit-details-marker{display:none}
+details.payload pre{
+  padding:16px;font-size:11.5px;line-height:1.6;color:var(--ink-dim);
+  overflow-x:auto;border-top:1px solid var(--hairline);
+  font-family:ui-monospace,Menlo,Consolas,monospace;
+}
+
+/* ---------- atlas map ---------- */
+#atlasSection{padding-bottom:0;border-bottom:none}
+#atlasMap{height:560px;margin-top:36px;border-top:1px solid var(--hairline)}
+.leaflet-container{background:#000;font-family:var(--sans)}
+.atlas-marker{display:flex;border:1px solid rgba(242,240,236,.55);height:10px;overflow:hidden}
+.atlas-marker span{display:block;height:100%}
+.leaflet-popup-content-wrapper{
+  background:#0b0b09;color:var(--ink);border:1px solid var(--hairline);
+  border-radius:0;box-shadow:none;
+}
+.leaflet-popup-tip{background:#0b0b09;border:1px solid var(--hairline)}
+.leaflet-popup-content{font-size:13px;line-height:1.55;margin:14px 16px}
+.pop-place{font-family:var(--serif);font-size:15px;margin-bottom:2px}
+.pop-meta{color:var(--ink-dim);font-size:11.5px;letter-spacing:.06em;text-transform:uppercase}
+.pop-thought{margin-top:8px;font-style:italic;color:var(--ink-dim)}
+.pop-strip{display:flex;height:8px;margin-top:10px;border:1px solid var(--hairline)}
+.pop-strip span{height:100%}
+
+footer{padding:48px 0 64px;color:var(--ink-faint);font-size:12px;letter-spacing:.06em}
+footer .wrap{display:flex;justify-content:space-between;gap:24px;flex-wrap:wrap}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <div class="wordmark">The Colour Atlas</div>
+    <nav>
+      <a href="#about">About</a>
+      <a href="#contribute">Contribute</a>
+      <a href="#atlasSection">Atlas</a>
+    </nav>
+  </div>
+  <div id="horizon" aria-hidden="true"></div>
+</header>
+
+<!-- ================= HERO ================= -->
+<div class="hero">
+  <div class="wrap">
+    <h1>One view, photographed again and again, becomes a <em>record of colour</em>.</h1>
+    <p>The Colour Atlas is a slow, collective survey of the colours of places. Contributors photograph the same view, extract its palette, and add it to a shared map — without ever sharing the photographs themselves.</p>
+    <div class="assurance">Your photos never leave your device · No account · No exact location</div>
+  </div>
+</div>
+
+<!-- ================= ABOUT ================= -->
+<section id="about">
+  <div class="wrap cols">
+    <div class="about-copy">
+      <div class="eyebrow">About</div>
+      <h2>What this is</h2>
+      <span class="placeholder-note">Placeholder text — replace with your own</span>
+      <p>The Colour Atlas began as a weekly ritual: twenty photographs of the same stretch of the Thames, taken from the same place, run through a small pipeline that distils them into colour. Over months, the palettes became a diary of weather, season and light — a way of seeing a familiar view change.</p>
+      <p>Now the pipeline is open. Anyone, anywhere, can photograph their own view — a window, a street corner, a horizon — and contribute its colours to a growing atlas of places, told entirely in palette.</p>
+      <p>Everything is processed in your browser. The Atlas keeps only what the colours can tell.</p>
+    </div>
+    <div>
+      <div class="eyebrow">How it works</div>
+      <h2>Four steps</h2>
+      <ol class="how-steps">
+        <li><span class="n">i.</span><div><h3>Photograph a view</h3><p>Around twenty photographs of the same view, taken on one day. Any camera, any weather.</p></div></li>
+        <li><span class="n">ii.</span><div><h3>Generate the palettes</h3><p>Your browser reads every pixel and produces two studies: a sky/earth palette and a percentages palette.</p></div></li>
+        <li><span class="n">iii.</span><div><h3>Place it, loosely</h3><p>Name the place and country yourself, and drop an approximate pin. Coordinates are snapped to a coarse grid before anything is sent.</p></div></li>
+        <li><span class="n">iv.</span><div><h3>Join the Atlas</h3><p>Your palette appears as a strip of colour on the public map — alongside, if you like, a thought from the view.</p></div></li>
+      </ol>
+    </div>
+  </div>
+</section>
+
+<!-- ================= CONTRIBUTE ================= -->
+<section id="contribute">
+  <div class="wrap">
+    <div class="eyebrow">Contribute</div>
+    <h2>Add your view</h2>
+
+    <!-- STEP 1 — photos -->
+    <div class="step">
+      <div class="step-label">Step one</div>
+      <h3>Your photographs</h3>
+      <p class="hint">Choose up to 20 photographs of the same view (JPG or PNG). They are read entirely on your device — nothing is uploaded, and any embedded location data is never touched.</p>
+
+      <div class="dropzone" id="dropzone" role="button" tabindex="0" aria-label="Choose photographs">
+        <span class="count" id="fileCount">0</span>
+        <p id="dropHint">Drop photographs here, or click to choose</p>
+      </div>
+      <input type="file" id="fileInput" accept="image/jpeg,image/png" multiple>
+
+      <div style="margin-top:24px">
+        <button id="generateBtn" disabled>Generate palettes</button>
+      </div>
+      <div class="progress" id="progress" aria-live="polite"></div>
+
+      <div class="palettes">
+        <figure class="palette-card" id="cardSky">
+          <canvas id="skyCanvas" width="1024" height="1024"></canvas>
+          <figcaption><span>Sky / Earth</span><a id="dlSky" download="palette_skyearth.png" href="#">Download PNG</a></figcaption>
+        </figure>
+        <figure class="palette-card" id="cardPct">
+          <canvas id="pctCanvas" width="1024" height="1024"></canvas>
+          <figcaption><span>Percentages</span><a id="dlPct" download="palette_percentages.png" href="#">Download PNG</a></figcaption>
+        </figure>
+      </div>
+      <p id="ratioLine"></p>
+    </div>
+
+    <!-- STEP 2 — place -->
+    <div class="step">
+      <div class="step-label">Step two</div>
+      <h3>Place it, loosely</h3>
+      <p class="hint">Search for the place — or click the map — to drop an approximate pin. The pin is snapped to a quarter-degree grid cell, roughly a 25&nbsp;km square, so your exact position is never recorded.</p>
+
+      <div class="loc-grid">
+        <div>
+          <label for="placeInput">Place</label>
+          <input type="text" id="placeInput" placeholder="e.g. Greenwich, looking across the Thames" maxlength="80">
+          <label for="countrySelect">Country / territory</label>
+          <select id="countrySelect"><option value="">Choose…</option></select>
+          <div class="cell-readout" id="cellReadout">No pin yet — click the map to place one.</div>
+        </div>
+        <div>
+          <label for="geoInput">Find on the map</label>
+          <div class="geo-row">
+            <input type="text" id="geoInput" placeholder="e.g. Greenwich, London" maxlength="80">
+            <button type="button" class="ghost" id="geoBtn">Locate</button>
+          </div>
+          <div id="pickMap" aria-label="Map for placing an approximate pin"></div>
+          <div class="geo-note">Search is powered by OpenStreetMap — only your search words are sent, never your location. You can also just click the map.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- STEP 3 — thought -->
+    <div class="step">
+      <div class="step-label">Step three — optional</div>
+      <h3>A thought from the view</h3>
+      <p class="hint">If you like, leave a short note of what you felt or noticed while photographing. It appears with your palette on the map.</p>
+      <label for="thoughtInput" style="margin-top:22px">Thought</label>
+      <textarea id="thoughtInput" maxlength="280" placeholder="e.g. The river was the same colour as the sky today."></textarea>
+      <div class="char-count"><span id="charCount">0</span> / 280</div>
+    </div>
+
+    <!-- privacy + submit -->
+    <div class="step">
+      <div class="step-label">Before you contribute</div>
+      <h3>What leaves your device</h3>
+      <div class="privacy-grid">
+        <div class="privacy-col">
+          <h4>Sent to the Atlas</h4>
+          <ul>
+            <li>The extracted palette data (colours &amp; percentages)</li>
+            <li>The sky / earth ratio</li>
+            <li>The place name and country you typed</li>
+            <li>The snapped grid cell of your pin</li>
+            <li>Your optional thought</li>
+          </ul>
+        </div>
+        <div class="privacy-col never">
+          <h4>Never sent</h4>
+          <ul>
+            <li>Your photographs</li>
+            <li>Embedded camera or GPS metadata</li>
+            <li>Your exact coordinates</li>
+            <li>Your name or email</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="submit-row">
+        <button id="submitBtn" disabled>Add to the Atlas</button>
+        <span id="submitNote"></span>
+      </div>
+      <details class="payload" id="payloadDetails" style="display:none">
+        <summary>Exactly what was sent</summary>
+        <pre id="payloadPre"></pre>
+      </details>
+    </div>
+  </div>
+</section>
+
+<!-- ================= ATLAS ================= -->
+<section id="atlasSection">
+  <div class="wrap">
+    <div class="eyebrow">The Atlas</div>
+    <h2>Every view so far</h2>
+    <p class="hint" style="color:var(--ink-dim);max-width:62ch">Each strip of colour is one contribution — its six hue families, sized by how much of the view they occupy. Click a strip to read it.</p>
+  </div>
+  <div id="atlasMap"></div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <span>The Colour Atlas</span>
+    <span>All processing happens in your browser.</span>
+  </div>
+</footer>
+
+<script>
+/* =========================================================
+   THE COLOUR ATLAS — client-side palette pipeline
+   Faithful port of palette_skyearth.py and palette_percentages_1_.py
+   ========================================================= */
+
+const BIN_NAMES = ['red','yellow','green','cyan','blue','magenta'];
+const TOTAL_PIXEL_CAP = 2_400_000;   // across all photos
+const OUT = 1024;                    // output canvas size
+const GRID = 0.25;                   // degrees — privacy snap
+
+const $ = id => document.getElementById(id);
+let files = [];
+let result = null;   // { ratio, bins:[{name,pct,rgb}], horizonColors }
+let pin = null;      // snapped {lat,lng}
+
+/* ---------- file selection ---------- */
+const dz = $('dropzone'), fi = $('fileInput');
+dz.addEventListener('click', () => fi.click());
+dz.addEventListener('keydown', e => { if(e.key==='Enter'||e.key===' '){e.preventDefault();fi.click();} });
+['dragover','dragenter'].forEach(ev => dz.addEventListener(ev, e => {e.preventDefault();dz.classList.add('dragging');}));
+['dragleave','drop'].forEach(ev => dz.addEventListener(ev, e => {e.preventDefault();dz.classList.remove('dragging');}));
+dz.addEventListener('drop', e => setFiles([...e.dataTransfer.files]));
+fi.addEventListener('change', () => setFiles([...fi.files]));
+
+function setFiles(list){
+  files = list.filter(f => /image\/(jpeg|png)/.test(f.type)).slice(0,20);
+  $('fileCount').textContent = files.length;
+  $('dropHint').textContent = files.length
+    ? (files.length===1 ? 'photograph chosen' : 'photographs chosen') + ' — click to change'
+    : 'Drop photographs here, or click to choose';
+  $('generateBtn').disabled = files.length === 0;
+  result = null;
+  updateSubmit();
+}
+
+/* ---------- pixel extraction ---------- */
+async function loadPixels(file, maxPx){
+  const url = URL.createObjectURL(file);
+  try{
+    const img = await new Promise((res,rej)=>{
+      const im = new Image();
+      im.onload = ()=>res(im);
+      im.onerror = ()=>rej(new Error('decode failed'));
+      im.src = url;
+    });
+    const scale = Math.min(1, Math.sqrt(maxPx / (img.width*img.height)));
+    const w = Math.max(1, Math.round(img.width*scale));
+    const h = Math.max(1, Math.round(img.height*scale));
+    const c = document.createElement('canvas');
+    c.width = w; c.height = h;
+    const ctx = c.getContext('2d', {willReadFrequently:true});
+    ctx.drawImage(img, 0, 0, w, h);
+    return ctx.getImageData(0,0,w,h).data;
+  } finally {
+    URL.revokeObjectURL(url);
+  }
+}
+
+const tick = () => new Promise(r => setTimeout(r, 0));
+const setProgress = t => { $('progress').textContent = t; };
+
+/* ---------- main pipeline ---------- */
+$('generateBtn').addEventListener('click', async () => {
+  $('generateBtn').disabled = true;
+  try { await runPipeline(); }
+  catch(err){ setProgress('Something went wrong reading the photographs — try removing any unusual files and generating again.'); console.error(err); }
+  $('generateBtn').disabled = files.length === 0;
+});
+
+async function runPipeline(){
+  /* --- 1. gather pixels --- */
+  const perPhoto = Math.floor(TOTAL_PIXEL_CAP / files.length);
+  const chunks = [];
+  let total = 0, failed = 0;
+  for(let i=0;i<files.length;i++){
+    setProgress(`Reading photograph ${i+1} of ${files.length}…`);
+    await tick();
+    try{
+      const d = await loadPixels(files[i], perPhoto);
+      chunks.push(d); total += d.length/4;
+    }catch(e){ failed++; }
+  }
+  if(total === 0){ setProgress('None of the files could be read.'); return; }
+
+  const N = total;
+  const R = new Float32Array(N), G = new Float32Array(N), B = new Float32Array(N);
+  let o = 0;
+  for(const d of chunks){
+    for(let i=0;i<d.length;i+=4){ R[o]=d[i]/255; G[o]=d[i+1]/255; B[o]=d[i+2]/255; o++; }
+  }
+  chunks.length = 0;
+
+  /* --- 2. HSV + luminance (matches the Python exactly) --- */
+  setProgress(`Analysing ${N.toLocaleString()} pixels…`); await tick();
+  const HUE = new Float32Array(N), SAT = new Float32Array(N),
+        VAL = new Float32Array(N), LUM = new Float32Array(N), VIB = new Float32Array(N);
+  for(let i=0;i<N;i++){
+    const r=R[i], g=G[i], b=B[i];
+    const mx = Math.max(r,g,b), mn = Math.min(r,g,b), d = mx-mn;
+    const s = mx!==0 ? d/mx : 0;
+    let h = 0;
+    if(d!==0){
+      if(mx===r) h = ((g-b)/d % 6 + 6) % 6;
+      else if(mx===g) h = (b-r)/d + 2;
+      else h = (r-g)/d + 4;
+    }
+    h /= 6;
+    const lum = 0.2126*r + 0.7152*g + 0.0722*b;
+    HUE[i]=h; SAT[i]=s; VAL[i]=mx; LUM[i]=lum; VIB[i]=(lum+s)/2;
+  }
+
+  /* --- 3. sky / earth classification --- */
+  const skyIdx = [], earthIdx = [];
+  for(let i=0;i<N;i++){
+    const isSky = (HUE[i]>=0.45 && HUE[i]<=0.72 && LUM[i]>0.25) || (SAT[i]<0.13 && LUM[i]>0.75);
+    (isSky ? skyIdx : earthIdx).push(i);
+  }
+  const skyFrac = skyIdx.length / N;
+  const ratio = { sky: +(100*skyFrac).toFixed(1), earth: +(100*(1-skyFrac)).toFixed(1) };
+
+  /* --- 4. render sky/earth square --- */
+  setProgress('Composing the sky / earth palette…'); await tick();
+  renderSkyEarth(skyIdx, earthIdx, HUE, VIB, R, G, B);
+  $('cardSky').classList.add('show');
+
+  /* --- 5. six-bin stats + treemap --- */
+  setProgress('Composing the percentages palette…'); await tick();
+  const bins = computeBins(N, HUE, SAT, VAL);
+  renderTreemap(bins);
+  $('cardPct').classList.add('show');
+
+  /* --- 6. finish --- */
+  paintHorizon(bins);
+  $('ratioLine').style.display = 'block';
+  $('ratioLine').textContent = `Sky ${ratio.sky}% · Earth ${ratio.earth}%` + (failed ? ` — ${failed} file(s) could not be read and were skipped.` : '');
+  setProgress(`Done — ${N.toLocaleString()} pixels from ${files.length - failed} photographs.`);
+
+  $('dlSky').href = $('skyCanvas').toDataURL('image/png');
+  $('dlPct').href = $('pctCanvas').toDataURL('image/png');
+
+  result = { ratio, bins };
+  updateSubmit();
+}
+
+/* ---------- sky/earth renderer ----------
+   Per group: sort by hue, slice into horizontal bands,
+   sort each band by vibrancy descending L→R.            */
+function renderSkyEarth(skyIdx, earthIdx, HUE, VIB, R, G, B){
+  const ctx = $('skyCanvas').getContext('2d');
+  ctx.fillStyle = '#000'; ctx.fillRect(0,0,OUT,OUT);
+  const img = ctx.createImageData(OUT, OUT);
+  const px = img.data;
+
+  const total = skyIdx.length + earthIdx.length;
+  let skyRows = Math.max( skyIdx.length ? 1 : 0, Math.round(OUT * skyIdx.length / total) );
+  if(earthIdx.length === 0) skyRows = OUT;
+  const earthRows = OUT - skyRows;
+
+  function drawBlock(idx, rowStart, nRows){
+    if(nRows <= 0 || idx.length === 0) return;
+    idx.sort((a,b) => HUE[a]-HUE[b]);
+    const band = Math.floor(idx.length / nRows);
+    if(band === 0){
+      // fewer pixels than rows — repeat what we have
+      for(let r=0;r<nRows;r++){
+        const i = idx[Math.min(idx.length-1, Math.floor(r*idx.length/nRows))];
+        for(let x=0;x<OUT;x++) put(px, x, rowStart+r, R[i],G[i],B[i]);
+      }
+      return;
+    }
+    const seg = new Uint32Array(band);
+    for(let r=0;r<nRows;r++){
+      const s = r*band;
+      for(let k=0;k<band;k++) seg[k] = idx[s+k];
+      // descending vibrancy left → right
+      seg.sort((a,b) => VIB[b]-VIB[a]);
+      const y = rowStart + r;
+      for(let x=0;x<OUT;x++){
+        const i = seg[Math.floor(x*band/OUT)];
+        put(px, x, y, R[i],G[i],B[i]);
+      }
+    }
+  }
+  function put(px,x,y,r,g,b){
+    const o = (y*OUT + x)*4;
+    px[o]=r*255; px[o+1]=g*255; px[o+2]=b*255; px[o+3]=255;
+  }
+
+  drawBlock(skyIdx, 0, skyRows);
+  drawBlock(earthIdx, skyRows, earthRows);
+  ctx.putImageData(img, 0, 0);
+}
+
+/* ---------- six-bin stats ----------
+   Saturation-weighted circular mean hue; 75th-percentile S and V. */
+function computeBins(N, HUE, SAT, VAL){
+  const counts = new Uint32Array(6);
+  const binOf = new Uint8Array(N);
+  for(let i=0;i<N;i++){
+    const b = Math.floor(HUE[i]*6 + 0.5) % 6;
+    binOf[i] = b; counts[b]++;
+  }
+  const bins = [];
+  for(let b=0;b<6;b++){
+    if(counts[b] === 0){ bins.push({name:BIN_NAMES[b], pct:0, rgb:[128,128,128]}); continue; }
+    const sArr = new Float32Array(counts[b]), vArr = new Float32Array(counts[b]);
+    let xm=0, ym=0, k=0;
+    for(let i=0;i<N;i++){
+      if(binOf[i]!==b) continue;
+      const ang = HUE[i]*2*Math.PI;
+      xm += Math.cos(ang)*SAT[i];
+      ym += Math.sin(ang)*SAT[i];
+      sArr[k]=SAT[i]; vArr[k]=VAL[i]; k++;
+    }
+    let meanHue = (Math.atan2(ym,xm)/(2*Math.PI)) % 1; if(meanHue<0) meanHue+=1;
+    sArr.sort(); vArr.sort();
+    const s75 = percentileSorted(sArr, 75), v75 = percentileSorted(vArr, 75);
+    bins.push({ name:BIN_NAMES[b], pct: counts[b]/N*100, rgb: hsvToRgb(meanHue, s75, v75) });
+  }
+  return bins;
+}
+function percentileSorted(arr, p){
+  // matches numpy's default linear interpolation
+  const idx = (arr.length-1) * p/100;
+  const lo = Math.floor(idx), hi = Math.ceil(idx);
+  return lo===hi ? arr[lo] : arr[lo] + (arr[hi]-arr[lo])*(idx-lo);
+}
+function hsvToRgb(h,s,v){
+  const i = Math.floor(h*6), f = h*6-i;
+  const p = v*(1-s), q = v*(1-f*s), t = v*(1-(1-f)*s);
+  let r,g,b;
+  switch(i%6){
+    case 0: r=v;g=t;b=p; break; case 1: r=q;g=v;b=p; break;
+    case 2: r=p;g=v;b=t; break; case 3: r=p;g=q;b=v; break;
+    case 4: r=t;g=p;b=v; break; default: r=v;g=p;b=q;
+  }
+  return [Math.round(r*255), Math.round(g*255), Math.round(b*255)];
+}
+
+/* ---------- top-heavy treemap (pct^0.7 layout, true % labels) ---------- */
+function topHeavyLayout(values, W, H){
+  const order = values.map((v,i)=>i).sort((a,b)=>values[b]-values[a]);
+  const P = 0.7;
+  const pvals = order.map(i => Math.pow(values[i], P));
+  const pTotal = pvals.reduce((a,b)=>a+b,0);
+  if(pTotal === 0) return [];
+  const rects = new Array(values.length).fill(null);
+
+  const topH = Math.round(H * pvals[0]/pTotal);
+  rects[order[0]] = [0,0,W,topH];
+
+  const restIdx = order.slice(1), restP = pvals.slice(1);
+  const restTotal = restP.reduce((a,b)=>a+b,0);
+  if(restTotal === 0) return rects;
+
+  const big3 = restIdx.slice(0,3), big3P = restP.slice(0,3);
+  const small2 = restIdx.slice(3,5), small2P = restP.slice(3,5);
+  const stackedColP = small2P.reduce((a,b)=>a+b,0);
+  const big3ColP = big3P.reduce((a,b)=>a+b,0);
+  const totP = stackedColP + big3ColP;
+  if(totP === 0) return rects;
+
+  const big3W = Math.round(W * big3ColP/totP);
+  const bottomY = topH, bottomH = H - topH;
+
+  let x = 0;
+  big3.forEach((idx,j) => {
+    const w = big3ColP>0 ? Math.round(big3W * big3P[j]/big3ColP) : 0;
+    rects[idx] = [x, bottomY, x+w, bottomY+bottomH];
+    x += w;
+  });
+  if(big3.length){ const r = rects[big3[big3.length-1]]; r[2] = big3W; }
+
+  if(small2.length){
+    const spTotal = small2P.reduce((a,b)=>a+b,0);
+    let y = bottomY;
+    small2.forEach((idx,j)=>{
+      if(j === small2.length-1){ rects[idx] = [big3W, y, W, bottomY+bottomH]; }
+      else{
+        const h = spTotal>0 ? Math.round(bottomH * small2P[j]/spTotal) : 0;
+        rects[idx] = [big3W, y, W, y+h]; y += h;
+      }
+    });
+  }
+  return rects;
+}
+
+function renderTreemap(bins){
+  const ctx = $('pctCanvas').getContext('2d');
+  ctx.fillStyle = '#000'; ctx.fillRect(0,0,OUT,OUT);
+  const rects = topHeavyLayout(bins.map(b=>b.pct), OUT, OUT);
+
+  rects.forEach((rect,i) => {
+    if(!rect) return;
+    const [x0,y0,x1,y1] = rect;
+    if(x1<=x0 || y1<=y0) return;
+    const s = bins[i];
+    ctx.fillStyle = `rgb(${s.rgb[0]},${s.rgb[1]},${s.rgb[2]})`;
+    ctx.fillRect(x0,y0,x1-x0,y1-y0);
+
+    const cw = x1-x0, ch = y1-y0;
+    const lum = (0.2126*s.rgb[0] + 0.7152*s.rgb[1] + 0.0722*s.rgb[2]) / 255;
+    ctx.fillStyle = lum < 0.5 ? '#ffffff' : '#000000';
+    ctx.textAlign = 'center';
+
+    const nameSize = Math.max(13, Math.min(cw,ch)/8);
+    const pctSize  = Math.max(16, Math.min(cw,ch)/5);
+    const gap = nameSize/4;
+    const blockH = nameSize + gap + pctSize;
+    if(blockH > ch - 8) return;  // cell too small for legible labels
+
+    const cx = (x0+x1)/2, cy = (y0+y1)/2;
+    ctx.font = `600 ${nameSize}px Archivo, sans-serif`;
+    if(ctx.measureText(s.name).width <= cw - 10)
+      ctx.fillText(s.name, cx, cy - blockH/2 + nameSize);
+    ctx.font = `600 ${pctSize}px Archivo, sans-serif`;
+    if(ctx.measureText(s.pct.toFixed(1)+'%').width <= cw - 6)
+      ctx.fillText(s.pct.toFixed(1)+'%', cx, cy - blockH/2 + nameSize + gap + pctSize);
+  });
+}
+
+/* ---------- horizon band — colour enters through contribution ---------- */
+function paintHorizon(bins){
+  const sorted = [...bins].sort((a,b)=>b.pct-a.pct);
+  let stops = [], acc = 0;
+  sorted.forEach(b => {
+    if(b.pct <= 0) return;
+    const c = `rgb(${b.rgb.join(',')})`;
+    stops.push(`${c} ${acc}%`); acc += b.pct; stops.push(`${c} ${Math.min(100,acc)}%`);
+  });
+  if(stops.length) $('horizon').style.background = `linear-gradient(90deg, ${stops.join(',')})`;
+}
+
+/* =========================================================
+   LOCATION — coarse pin
+   ========================================================= */
+const COUNTRIES = ["Afghanistan","Albania","Algeria","Andorra","Angola","Antigua and Barbuda","Argentina","Armenia","Australia","Austria","Azerbaijan","Bahamas","Bahrain","Bangladesh","Barbados","Belarus","Belgium","Belize","Benin","Bhutan","Bolivia","Bosnia and Herzegovina","Botswana","Brazil","Brunei","Bulgaria","Burkina Faso","Burundi","Cabo Verde","Cambodia","Cameroon","Canada","Central African Republic","Chad","Chile","China","Colombia","Comoros","Congo (Brazzaville)","Congo (DRC)","Costa Rica","Côte d'Ivoire","Croatia","Cuba","Cyprus","Czechia","Denmark","Djibouti","Dominica","Dominican Republic","Ecuador","Egypt","El Salvador","Equatorial Guinea","Eritrea","Estonia","Eswatini","Ethiopia","Fiji","Finland","France","Gabon","Gambia","Georgia","Germany","Ghana","Greece","Greenland","Grenada","Guatemala","Guinea","Guinea-Bissau","Guyana","Haiti","Honduras","Hong Kong","Hungary","Iceland","India","Indonesia","Iran","Iraq","Ireland","Israel","Italy","Jamaica","Japan","Jordan","Kazakhstan","Kenya","Kiribati","Kosovo","Kuwait","Kyrgyzstan","Laos","Latvia","Lebanon","Lesotho","Liberia","Libya","Liechtenstein","Lithuania","Luxembourg","Macau","Madagascar","Malawi","Malaysia","Maldives","Mali","Malta","Marshall Islands","Mauritania","Mauritius","Mexico","Micronesia","Moldova","Monaco","Mongolia","Montenegro","Morocco","Mozambique","Myanmar","Namibia","Nauru","Nepal","Netherlands","New Zealand","Nicaragua","Niger","Nigeria","North Korea","North Macedonia","Norway","Oman","Pakistan","Palau","Palestine","Panama","Papua New Guinea","Paraguay","Peru","Philippines","Poland","Portugal","Puerto Rico","Qatar","Romania","Russia","Rwanda","Saint Kitts and Nevis","Saint Lucia","Saint Vincent and the Grenadines","Samoa","San Marino","São Tomé and Príncipe","Saudi Arabia","Senegal","Serbia","Seychelles","Sierra Leone","Singapore","Slovakia","Slovenia","Solomon Islands","Somalia","South Africa","South Korea","South Sudan","Spain","Sri Lanka","Sudan","Suriname","Sweden","Switzerland","Syria","Taiwan","Tajikistan","Tanzania","Thailand","Timor-Leste","Togo","Tonga","Trinidad and Tobago","Tunisia","Turkey","Turkmenistan","Tuvalu","Uganda","Ukraine","United Arab Emirates","United Kingdom","United States","Uruguay","Uzbekistan","Vanuatu","Vatican City","Venezuela","Vietnam","Yemen","Zambia","Zimbabwe"];
+const sel = $('countrySelect');
+COUNTRIES.forEach(c => { const o = document.createElement('option'); o.value = o.textContent = c; sel.appendChild(o); });
+
+const snap = v => Math.floor(v/GRID)*GRID + GRID/2;
+
+const DARK_TILES = 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png';
+const TILE_ATTR = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>';
+
+const pickMap = L.map('pickMap', {worldCopyJump:true, zoomControl:true}).setView([30, 0], 1);
+L.tileLayer(DARK_TILES, {attribution:TILE_ATTR, subdomains:'abcd', maxZoom:19}).addTo(pickMap);
+let pickMarker = null;
+
+function placePin(lat, lng){
+  pin = {lat:+snap(lat).toFixed(3), lng:+snap(((lng+180)%360+360)%360 - 180).toFixed(3)};
+  if(pickMarker) pickMarker.remove();
+  pickMarker = L.rectangle(
+    [[pin.lat-GRID/2, pin.lng-GRID/2],[pin.lat+GRID/2, pin.lng+GRID/2]],
+    {color:'#f2f0ec', weight:1, fillOpacity:.15}
+  ).addTo(pickMap);
+  $('cellReadout').innerHTML = `Snapped to grid cell <strong>${pin.lat.toFixed(3)}°, ${pin.lng.toFixed(3)}°</strong> — the cell, not the exact point, is what's shared.`;
+  updateSubmit();
+}
+
+pickMap.on('click', e => placePin(e.latlng.lat, e.latlng.lng));
+
+/* ---------- geocoding (OpenStreetMap Nominatim) ---------- */
+let geoBusy = false;
+async function geocode(){
+  const q = $('geoInput').value.trim();
+  if(!q || geoBusy) return;
+  geoBusy = true;
+  $('geoBtn').disabled = true;
+  $('cellReadout').textContent = 'Searching…';
+  try{
+    const url = 'https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&addressdetails=1&accept-language=en&q=' + encodeURIComponent(q);
+    const res = await fetch(url, {headers:{'Accept':'application/json'}});
+    if(!res.ok) throw new Error('geocoder unavailable');
+    const data = await res.json();
+    if(!data.length){
+      $('cellReadout').textContent = `No match for “${q}” — try adding the country, or click the map directly.`;
+      return;
+    }
+    const hit = data[0];
+    const lat = parseFloat(hit.lat), lng = parseFloat(hit.lon);
+    placePin(lat, lng);
+    pickMap.flyTo([snap(lat), snap(lng)], 9, {duration:1.2});
+    // auto-select country if the geocoder names one we have
+    const cn = hit.address && hit.address.country;
+    if(cn){
+      const match = COUNTRIES.find(c => c.toLowerCase() === cn.toLowerCase());
+      if(match && !$('countrySelect').value){ $('countrySelect').value = match; updateSubmit(); }
+    }
+    // offer the found name as the place label if that field is still empty
+    if(!$('placeInput').value.trim()){
+      $('placeInput').value = (hit.name || q).slice(0,80);
+      updateSubmit();
+    }
+  }catch(err){
+    $('cellReadout').textContent = 'The geocoder couldn\u2019t be reached — click the map to place your pin instead.';
+  }finally{
+    geoBusy = false;
+    $('geoBtn').disabled = false;
+  }
+}
+$('geoBtn').addEventListener('click', geocode);
+$('geoInput').addEventListener('keydown', e => { if(e.key === 'Enter'){ e.preventDefault(); geocode(); } });
+
+/* =========================================================
+   THE PUBLIC ATLAS
+   ========================================================= */
+const atlasMap = L.map('atlasMap', {worldCopyJump:true, minZoom:1}).setView([28, 5], 2);
+L.tileLayer(DARK_TILES, {attribution:TILE_ATTR, subdomains:'abcd', maxZoom:19}).addTo(atlasMap);
+
+function stripHTML(bins, h){
+  const sorted = [...bins].filter(b=>b.pct>0).sort((a,b)=>b.pct-a.pct);
+  return sorted.map(b =>
+    `<span style="width:${b.pct.toFixed(2)}%;background:rgb(${b.rgb.join(',')})"></span>`
+  ).join('');
+}
+
+function addAtlasMarker(entry){
+  const icon = L.divIcon({
+    className:'',
+    html:`<div class="atlas-marker" style="width:46px">${stripHTML(entry.bins)}</div>`,
+    iconSize:[46,10], iconAnchor:[23,5]
+  });
+  const m = L.marker([entry.grid_cell.lat, entry.grid_cell.lng], {icon}).addTo(atlasMap);
+  const date = new Date(entry.timestamp).toLocaleDateString(undefined,{year:'numeric',month:'short',day:'numeric'});
+  m.bindPopup(`
+    <div class="pop-place">${escapeHTML(entry.place)}</div>
+    <div class="pop-meta">${escapeHTML(entry.country)} · ${date} · sky ${entry.skyearth.sky}%</div>
+    ${entry.thought ? `<div class="pop-thought">“${escapeHTML(entry.thought)}”</div>` : ''}
+    <div class="pop-strip">${stripHTML(entry.bins)}</div>
+  `);
+  return m;
+}
+function escapeHTML(s){ return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+/* Founding contribution — Greenwich, so the Atlas is never empty */
+addAtlasMarker({
+  schema:'colour-atlas/v1',
+  place:'Greenwich, looking across the Thames',
+  country:'United Kingdom',
+  grid_cell:{lat:51.375, lng:0.125},
+  skyearth:{sky:41.2, earth:58.8},
+  bins:[
+    {name:'red',pct:14.1,rgb:[122,96,84]},
+    {name:'yellow',pct:21.9,rgb:[136,121,92]},
+    {name:'green',pct:9.4,rgb:[98,112,90]},
+    {name:'cyan',pct:18.6,rgb:[124,148,158]},
+    {name:'blue',pct:31.3,rgb:[108,128,156]},
+    {name:'magenta',pct:4.7,rgb:[118,104,118]}
+  ],
+  thought:'The founding view. The river was the same colour as the sky today.',
+  timestamp:'2026-06-05T10:40:00Z'
+});
+
+/* =========================================================
+   SUBMISSION
+   ========================================================= */
+function updateSubmit(){
+  const ready = !!result && !!pin && $('placeInput').value.trim() && $('countrySelect').value;
+  $('submitBtn').disabled = !ready;
+  $('submitNote').textContent = ready ? '' :
+    !result ? 'Generate your palettes first.' :
+    !pin ? 'Drop an approximate pin on the map.' :
+    'Name the place and choose a country.';
+}
+['input','change'].forEach(ev => {
+  $('placeInput').addEventListener(ev, updateSubmit);
+  $('countrySelect').addEventListener(ev, updateSubmit);
+});
+$('thoughtInput').addEventListener('input', () => {
+  $('charCount').textContent = $('thoughtInput').value.length;
+});
+updateSubmit();
+
+$('submitBtn').addEventListener('click', () => {
+  const entry = {
+    schema:'colour-atlas/v1',
+    place: $('placeInput').value.trim(),
+    country: $('countrySelect').value,
+    grid_cell: pin,
+    skyearth: result.ratio,
+    bins: result.bins.map(b => ({name:b.name, pct:+b.pct.toFixed(2), rgb:b.rgb})),
+    thought: $('thoughtInput').value.trim() || null,
+    timestamp: new Date().toISOString()
+  };
+  const marker = addAtlasMarker(entry);
+  $('payloadDetails').style.display = 'block';
+  $('payloadPre').textContent = JSON.stringify(entry, null, 2);
+  $('submitNote').textContent = 'Added to the Atlas below.';
+  document.getElementById('atlasSection').scrollIntoView({behavior:'smooth'});
+  setTimeout(() => marker.openPopup(), 700);
+});
+</script>
+</body>
+</html>
