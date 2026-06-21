@@ -9,7 +9,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,600&family=Archivo:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/supabase-js/2.39.7/supabase.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 :root{
   --bg:#000;--ink:#f2f0ec;--ink-dim:#9a978f;--ink-faint:#55534e;
@@ -281,9 +281,15 @@ if(CONFIGURED && window.supabase){
 }else{
   const b=document.getElementById("config-banner");
   b.classList.remove("hidden");
-  b.innerHTML="<strong>Demo mode.</strong> Supabase isn't connected yet, so submissions won't be saved or shared, and the map shows sample pins. "+
-    "Paste your <code>SUPABASE_URL</code> and <code>SUPABASE_PUBLISHABLE</code> key at the top of this file's script to go live. "+
-    "You can still test the whole flow — palettes generate normally.";
+  if(CONFIGURED && !window.supabase){
+    // Keys are present but the supabase-js library never loaded (CDN blocked/failed).
+    b.innerHTML="<strong>Library didn't load.</strong> Your Supabase keys are set, but the supabase-js script failed to load, "+
+      "so the database can't be reached. Check the <code>&lt;script&gt;</code> CDN tag in the page head and your network connection, then reload.";
+  }else{
+    b.innerHTML="<strong>Demo mode.</strong> Supabase isn't connected yet, so submissions won't be saved or shared, and the map shows sample pins. "+
+      "Paste your <code>SUPABASE_URL</code> and <code>SUPABASE_PUBLISHABLE</code> key at the top of this file's script to go live. "+
+      "You can still test the whole flow — palettes generate normally.";
+  }
 }
 
 /* ============================================================================
