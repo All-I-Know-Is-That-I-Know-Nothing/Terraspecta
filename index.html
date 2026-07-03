@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Color Loci</title>
+<title>Terraspecta</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -27,7 +27,7 @@ a{color:var(--ink);text-decoration:none;border-bottom:1px solid var(--ink-faint)
 .eyebrow{font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--ink-dim);font-weight:600}
 h1,h2,h3{font-family:var(--serif);font-weight:400;line-height:1.05;letter-spacing:-.02em}
 header.hero{padding:120px 0 64px}
-header.hero h1{font-size:clamp(48px,9vw,116px);font-weight:600}
+header.hero h1{font-size:clamp(40px,9vw,116px);font-weight:600;overflow-wrap:break-word;hyphens:none}
 header.hero h1 em{font-style:normal;color:var(--accent)}
 header.hero .lede{max-width:560px;margin-top:28px;color:var(--ink-dim);font-size:17px}
 .hero-strip{display:flex;height:14px;margin-top:48px;border:1px solid var(--hairline)}
@@ -99,6 +99,19 @@ select{appearance:none;background-image:linear-gradient(45deg,transparent 50%,va
 .status.err{color:var(--warn)}
 .status.ok{color:var(--ok)}
 .privacy-note{font-size:12px;color:var(--ink-faint);margin-top:10px;line-height:1.5;border-left:2px solid var(--hairline);padding-left:12px}
+.panas-ref{font-size:11px;color:var(--ink-faint);margin-top:14px;line-height:1.5}
+.panas-ref a{color:var(--ink-dim);border-bottom:1px solid var(--ink-faint);word-break:break-all}
+.privacy-section{border:1px solid var(--hairline);background:var(--panel);padding:28px;margin-top:18px}
+.privacy-section h3{font-size:22px;margin-bottom:16px}
+.privacy-section .lead{color:var(--ink-dim);margin-bottom:18px;max-width:60ch}
+.privacy-section .pgroup{margin-bottom:16px}
+.privacy-section .pgroup:last-child{margin-bottom:0}
+.privacy-section .ptag{font-size:11px;letter-spacing:.1em;text-transform:uppercase;font-weight:600;margin-bottom:6px}
+.privacy-section .ptag.pub{color:var(--warn)}
+.privacy-section .ptag.priv{color:var(--ok)}
+.privacy-section .ptag.opt{color:var(--ink-dim)}
+.privacy-section .pgroup p{color:var(--ink-dim);max-width:60ch}
+.privacy-section .pgroup p strong{color:var(--ink);font-weight:500}
 .config-banner{background:#fbf3df;border:1px solid #e3cd91;color:#6b531a;padding:14px 18px;font-size:13px;margin:0 0 22px;line-height:1.5}
 .config-banner code{background:#fff;padding:1px 6px;border:1px solid #e3cd91;font-size:12px}
 footer{padding:60px 0;color:var(--ink-faint);font-size:13px}
@@ -124,9 +137,9 @@ footer{padding:60px 0;color:var(--ink-faint);font-size:13px}
 
 <header class="hero">
   <div class="wrap">
-    <div class="eyebrow">A crowdsourced record of place &amp; colour</div>
-    <h1>Color<br><em>Loci</em></h1>
-    <p class="lede">A growing map of the world told in colour. Photograph the view from where you stand; the atlas keeps the palette, never the photographs.</p>
+    <div class="eyebrow">A crowdsourced record of place, colour &amp; feeling</div>
+    <h1>Terra<em>specta</em></h1>
+    <p class="lede">How places look, how they feel.</p>
     <div class="hero-strip" id="hero-strip" aria-hidden="true"></div>
   </div>
 </header>
@@ -135,9 +148,8 @@ footer{padding:60px 0;color:var(--ink-faint);font-size:13px}
   <div class="wrap two-col">
     <div><div class="section-no">01 - About</div><h2>Colour as a record of place</h2></div>
     <div class="prose">
-      <p>Color Loci began as a weekly ritual: photograph one stretch of south-east London, run the images through a colour pipeline, and watch a place change across a year in nothing but its palette.</p>
-      <p>This is the public version. Anyone, anywhere, can add the colours of their own view. Your photos are processed <strong>entirely on your device</strong> - only the extracted palette data is ever sent. The pictures themselves never leave your phone or computer.</p>
-      <p>Each contribution produces two palettes: a <strong>sky / earth split</strong> and a <strong>six-bin breakdown</strong>. Click any pin on the atlas to see that place's palettes in full.</p>
+      <p>Terraspecta is a project by <a href="https://www.instagram.com/maritina.keleri/" target="_blank" rel="noopener">Maritina Keleri</a>, an artist-researcher and Lecturer at the University of Westminster, London. It began as an enquiry into a simple question: what is the colour of a place, if it has one at all, and how might that colour shape the way we feel there?</p>
+      <p>The work is indebted to others who have mapped colour to place and perception. Jean-Philippe Lenclos's <em>Geography of Colour</em> built a systematic, photographic survey of the colours of built environments, region by region; Olafur Eliasson's <em>Turner colour experiments</em> distilled J.M.W. Turner's paintings into their essential hues, abstracting each canvas into a study of pure colour. Terraspecta takes up that lineage and opens it to anyone: photograph the view from where you stand, and the atlas keeps its palette.</p>
     </div>
   </div>
 </section>
@@ -160,11 +172,11 @@ footer{padding:60px 0;color:var(--ink-faint);font-size:13px}
 
       <div class="step">
         <div class="step-head"><span class="n">i</span><h3>Photograph your view</h3><span class="sub">20 photos required</span></div>
-        <div class="prose" style="margin-bottom:18px"><p>Capture the place as it looks right now. Twenty photos, in this spread - it's fine if they overlap:</p></div>
+        <div class="prose" style="margin-bottom:18px"><p>Capture the place as it looks right now: the view outside your window, the view as you walk to work, or the view across your favourite park or market. We're not looking for the most Instagrammable spot, we're looking for the view of the place itself. Take twenty photos that cover your field of view, and don't worry if they overlap (they're meant to!).</p></div>
         <div class="shotlist">
           <div><b>10 across</b>Sweep left to right along the horizon</div>
-          <div><b>5 down</b>Looking down - ground, water, what's below</div>
-          <div><b>5 up</b>Looking up - sky, canopy, what's above</div>
+          <div><b>5 down</b>Looking down, ground, water, what's below</div>
+          <div><b>5 up</b>Looking up, sky, canopy, what's above</div>
         </div>
         <div class="dropzone" id="dropzone" style="margin-top:18px">
           <input type="file" id="file-input" accept="image/*" multiple class="hidden">
@@ -191,17 +203,18 @@ footer{padding:60px 0;color:var(--ink-faint);font-size:13px}
             <option value="evening">Evening (5pm–9pm)</option>
             <option value="night">Night (9pm–5am)</option>
           </select></label>
-        <div class="prose" style="margin:6px 0 14px"><p style="font-size:13px">Drop a pin on the spot. It's snapped to a coarse ~5&nbsp;km grid - the circle shows the area actually stored, so your exact position never is.</p></div>
+        <div class="prose" style="margin:6px 0 14px"><p style="font-size:13px">Drop a pin on the spot. It's snapped to a coarse ~5&nbsp;km grid, the circle shows the area actually stored, so your exact position never is.</p></div>
         <div id="pick-map"></div>
         <div class="grid-readout" id="grid-readout">No location picked yet.</div>
       </div>
 
       <div class="step">
         <div class="step-head"><span class="n">iii</span><h3>How do you feel, here, now?</h3><span class="sub">optional · private</span></div>
-        <div class="prose" style="margin-bottom:16px"><p style="font-size:13px">To what extent do you feel this way right now? <em>(I-PANAS-SF - Thompson, 2007)</em></p></div>
+        <div class="prose" style="margin-bottom:16px"><p style="font-size:13px">To what extent do you feel this way right now? <em>(I-PANAS-SF, Thompson, 2007)</em></p></div>
         <div class="panas-legend"><span>1 - Very slightly / not at all</span><span>5 - Extremely</span></div>
         <div class="panas-grid" id="panas-grid"></div>
-        <div class="privacy-note">Your mood answers are kept private - they're never shown on the map or to other people. They're stored only for the project's research into colour and feeling.</div>
+        <div class="privacy-note">Your mood answers are kept private, they're never shown on the map or to other people. They're stored only for the project's research into colour and feeling.</div>
+        <div class="panas-ref">Thompson, E.R. (2007) &lsquo;Development and Validation of an Internationally Reliable Short-Form of the Positive and Negative Affect Schedule (PANAS),&rsquo; <em>Journal of Cross-Cultural Psychology</em>, 38(2), pp. 227&ndash;242. Available at: <a href="https://doi.org/10.1177/0022022106297301" target="_blank" rel="noopener">https://doi.org/10.1177/0022022106297301</a>.</div>
       </div>
 
       <div class="step">
@@ -219,7 +232,7 @@ footer{padding:60px 0;color:var(--ink-faint);font-size:13px}
         </div>
         <label class="field hidden" id="gender-sd-wrap"><span class="lab">Self-describe</span>
           <input type="text" id="gender-sd" placeholder="In your own words" maxlength="60"></label>
-        <div class="privacy-note">Age and gender are kept private, like your mood answers - never public.</div>
+        <div class="privacy-note">Age and gender are kept private, like your mood answers, never public.</div>
       </div>
 
       <div class="step">
@@ -253,15 +266,42 @@ footer{padding:60px 0;color:var(--ink-faint);font-size:13px}
         </div>
       </div>
 
+      <div class="step">
+        <div class="step-head"><span class="n">vii</span><h3>Data privacy</h3><span class="sub">what we hold</span></div>
+        <div class="privacy-section">
+          <p class="lead">Your photographs never leave your device. They are processed entirely in your browser, and only the extracted colour palette data is ever sent to us. The original images are never uploaded, never stored, and never seen by anyone.</p>
+
+          <div class="pgroup">
+            <div class="ptag pub">Public, shown on the atlas</div>
+            <p>The place name and country you enter, the time of day, an approximate location, your two generated palettes, the sky and earth percentages, and your optional written message. The location is deliberately imprecise: your exact position is never stored, it is snapped to a coarse grid of roughly 5&nbsp;km before anything is saved, so a pin marks an area, not a spot.</p>
+          </div>
+
+          <div class="pgroup">
+            <div class="ptag priv">Private, never shown publicly</div>
+            <p>Your mood answers, your age, and your gender are kept private. They are never displayed on the map or shown to other people, and are held separately from the public record, linked only by an anonymous identifier. They are used solely for the project's research into colour and feeling.</p>
+          </div>
+
+          <div class="pgroup">
+            <div class="ptag opt">Optional</div>
+            <p>Only your photographs, country, place, time of day, and location are needed to contribute. The mood questionnaire, age, gender, and written message are all entirely optional, leave any of them blank and your contribution still counts.</p>
+          </div>
+
+          <div class="pgroup">
+            <div class="ptag">Stored files</div>
+            <p>The palette images we store carry no identifying information in their names or paths. They cannot be traced back to you from the atlas.</p>
+          </div>
+        </div>
+      </div>
+
     </div>
   </div>
 </section>
 
-<footer><div class="wrap">Color Loci - your photographs never leave your device. Only palette data is shared.</div></footer>
+<footer><div class="wrap">Terraspecta &copy; <span id="footer-year">2026</span> Maritina Keleri. All rights reserved.</div></footer>
 
 <script>
 /* ============================================================================
-   COLOR LOCI — client-side pipeline + Supabase persistence
+   TERRASPECTA — client-side pipeline + Supabase persistence
 
    PASTE YOUR SUPABASE DETAILS HERE
    After creating your project (see SETUP_GUIDE), fill these in.
@@ -289,7 +329,7 @@ if(CONFIGURED && window.supabase){
   }else{
     b.innerHTML="<strong>Demo mode.</strong> Supabase isn't connected yet, so submissions won't be saved or shared, and the map shows sample pins. "+
       "Paste your <code>SUPABASE_URL</code> and <code>SUPABASE_PUBLISHABLE</code> key at the top of this file's script to go live. "+
-      "You can still test the whole flow - palettes generate normally.";
+      "You can still test the whole flow, palettes generate normally.";
   }
 }
 
@@ -303,14 +343,26 @@ async function fileToPixels(file){
   const c=document.createElement("canvas"); c.width=w; c.height=h;
   const ctx=c.getContext("2d",{willReadFrequently:true});
   ctx.drawImage(bmp,0,0,w,h); bmp.close();
-  return ctx.getImageData(0,0,w,h).data;
+  return {data:ctx.getImageData(0,0,w,h).data, w, h};
 }
 async function gatherPixels(files){
   const chunks=[]; let total=0;
-  for(const f of files){ const rgba=await fileToPixels(f); chunks.push(rgba); total+=rgba.length/4; }
+  for(const f of files){ const img=await fileToPixels(f); chunks.push(img); total+=img.data.length/4; }
   const R=new Float64Array(total),G=new Float64Array(total),B=new Float64Array(total);
+  // yPos[i] = normalised vertical position of pixel i within its source frame
+  // (0 = top row, 1 = bottom row). Captured for later meta-analysis only;
+  // it is NOT used by the palette renderers, so visible output is unchanged.
+  const yPos=new Float64Array(total);
   let o=0;
-  for(const rgba of chunks){ for(let i=0;i<rgba.length;i+=4){ R[o]=rgba[i]/255;G[o]=rgba[i+1]/255;B[o]=rgba[i+2]/255;o++; } }
+  for(const img of chunks){
+    const rgba=img.data, w=img.w, h=img.h, denom=h>1?h-1:1;
+    for(let i=0;i<rgba.length;i+=4){
+      R[o]=rgba[i]/255;G[o]=rgba[i+1]/255;B[o]=rgba[i+2]/255;
+      const row=Math.floor((i/4)/w);
+      yPos[o]=row/denom;
+      o++;
+    }
+  }
   const hue=new Float64Array(total),sat=new Float64Array(total),val=new Float64Array(total),lum=new Float64Array(total);
   for(let i=0;i<total;i++){
     const r=R[i],g=G[i],b=B[i],mx=Math.max(r,g,b),mn=Math.min(r,g,b),d=mx-mn;
@@ -319,7 +371,34 @@ async function gatherPixels(files){
     if(d!==0){ if(mx===r)hh=(((g-b)/d)%6+6)%6; else if(mx===g)hh=(b-r)/d+2; else hh=(r-g)/d+4; hh/=6; }
     hue[i]=hh; lum[i]=0.2126*r+0.7152*g+0.0722*b;
   }
-  return {R,G,B,hue,sat,val,lum,total};
+  return {R,G,B,hue,sat,val,lum,yPos,total};
+}
+// Compact per-submission y-position summary for later sky/earth re-analysis.
+// Splits the frame into NBANDS horizontal bands (top→bottom) and, for each band,
+// records what fraction of pixels fall in it plus that band's mean hue/sat/val/lum.
+// This is enough to approximate a positional-prior classifier downstream without
+// ever storing the photos. Returns a small plain object safe to JSON-serialise.
+function summariseYBands(px, NBANDS){
+  NBANDS = NBANDS || 12;
+  const {hue,sat,val,lum,yPos,total}=px;
+  const cnt=new Float64Array(NBANDS), sH=new Float64Array(NBANDS),
+        sS=new Float64Array(NBANDS), sV=new Float64Array(NBANDS), sL=new Float64Array(NBANDS);
+  for(let i=0;i<total;i++){
+    let bi=Math.floor(yPos[i]*NBANDS); if(bi>=NBANDS)bi=NBANDS-1; if(bi<0)bi=0;
+    cnt[bi]++; sH[bi]+=hue[i]; sS[bi]+=sat[i]; sV[bi]+=val[i]; sL[bi]+=lum[i];
+  }
+  const bands=[];
+  for(let b=0;b<NBANDS;b++){
+    const c=cnt[b];
+    bands.push({
+      frac:+(c/total).toFixed(4),
+      hue:c?+(sH[b]/c).toFixed(4):null,
+      sat:c?+(sS[b]/c).toFixed(4):null,
+      val:c?+(sV[b]/c).toFixed(4):null,
+      lum:c?+(sL[b]/c).toFixed(4):null
+    });
+  }
+  return {nbands:NBANDS, order:"top_to_bottom", bands};
 }
 function renderSkyEarth(px,canvas){
   const {R,G,B,hue,sat,lum,total}=px,N=OUTPUT_SIZE;
@@ -476,7 +555,7 @@ function refreshGate(){
   countPill.textContent=`${n} / 20`;
   countPill.className="count-pill "+(exact?"ok":"warn");
   if(n<20) countStatus.textContent=`Add ${20-n} more photo${20-n===1?"":"s"} to continue.`;
-  else if(n>20) countStatus.textContent="That's more than 20 - remove some.";
+  else if(n>20) countStatus.textContent="That's more than 20, remove some.";
   else countStatus.textContent="Twenty photos ready.";
   const gen=document.getElementById("gen-btn"); gen.disabled=!exact;
   document.getElementById("gen-status").textContent=exact?"Ready to generate.":"Add your 20 photos first.";
@@ -486,7 +565,7 @@ function refreshGate(){
 let pickMap,pickMarker,pickCircle;
 function snapToGrid(lat,lng){ return {lat:Math.round(lat/GRID_RES)*GRID_RES, lng:Math.round(lng/GRID_RES)*GRID_RES, res:GRID_RES}; }
 function initPickMap(){
-  if(!window.L){document.getElementById("grid-readout").textContent="Map library blocked - location picker unavailable.";return;}
+  if(!window.L){document.getElementById("grid-readout").textContent="Map library blocked, location picker unavailable.";return;}
   pickMap=L.map("pick-map",{worldCopyJump:true}).setView([30,10],2);
   L.tileLayer("https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png",{attribution:"© OpenStreetMap © CARTO",subdomains:"abcd",maxZoom:19}).addTo(pickMap);
   pickMap.on("click",e=>{
@@ -517,7 +596,8 @@ genBtn.addEventListener("click",async()=>{
     document.getElementById("dl-percentages").href=URL.createObjectURL(pctBlob);
     state.generated={ seBlob, pctBlob,
       palette_data:{ schema:PALETTE_SCHEMA, sky_pct:+se.sky_pct.toFixed(2), earth_pct:+se.earth_pct.toFixed(2),
-        bins:stats.map(s=>({name:s.name,pct:+s.pct.toFixed(2),rgb:s.rgb})) } };
+        bins:stats.map(s=>({name:s.name,pct:+s.pct.toFixed(2),rgb:s.rgb})),
+        y_bands:summariseYBands(px,12) } };
     gs.textContent="Palettes ready. Download them, or add to the atlas below."; gs.className="status ok";
     genBtn.disabled=false; refreshSubmit();
   }catch(err){ console.error(err); gs.textContent="Something went wrong reading the photos. Try again."; gs.className="status err"; genBtn.disabled=false; }
@@ -662,14 +742,16 @@ async function loadAtlas(){
   try{
     const {data,error}=await supa.from("submissions").select("*").order("created_at",{ascending:false}).limit(2000);
     if(error)throw error;
-    if(!data||data.length===0){ note.textContent="No contributions yet - be the first to add your view below."; return; }
+    if(!data||data.length===0){ note.textContent="No contributions yet, be the first to add your view below."; return; }
     data.forEach(d=>addMarker(d,false));
     note.textContent=`${data.length} contribution${data.length===1?"":"s"} on the atlas. Click any pin to see its palettes.`;
-  }catch(err){ console.error(err); SEED.forEach(s=>addMarker(s,false)); note.textContent="Couldn't reach the atlas database - showing samples. Check your Supabase settings."; }
+  }catch(err){ console.error(err); SEED.forEach(s=>addMarker(s,false)); note.textContent="Couldn't reach the atlas database, showing samples. Check your Supabase settings."; }
 }
 (function(){ const cols=["#78a0c8","#607652","#b6a06e","#96605a","#78aaaa","#9670a0","#c8a064","#b4644b"];
   const s=document.getElementById("hero-strip"); cols.forEach(c=>{const sp=document.createElement("span");sp.style.background=c;s.appendChild(sp);}); })();
-window.addEventListener("load",()=>{ initAtlasMap(); initPickMap(); loadAtlas(); refreshGate(); refreshSubmit(); });
+window.addEventListener("load",()=>{ initAtlasMap(); initPickMap(); loadAtlas(); refreshGate(); refreshSubmit();
+  const fy=document.getElementById("footer-year"); if(fy)fy.textContent=new Date().getFullYear();
+});
 </script>
 </body>
 </html>
