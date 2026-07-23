@@ -117,7 +117,7 @@ select{appearance:none;background-image:linear-gradient(45deg,transparent 50%,va
 footer{padding:60px 0;color:var(--ink-faint);font-size:13px}
 .hidden{display:none!important}
 .leaflet-popup-content-wrapper,.leaflet-popup-tip{background:#fff;color:#1a1916;border:1px solid #dcdcdc;border-radius:0;box-shadow:0 8px 30px rgba(0,0,0,.18)}
-.leaflet-popup-content{margin:12px 14px;font-family:var(--sans);font-size:13px;width:210px!important}
+.leaflet-popup-content{margin:12px 14px;font-family:var(--sans);font-size:13px;width:240px!important}
 .leaflet-popup-content h4{font-family:var(--serif);font-weight:400;font-size:17px;margin-bottom:2px}
 .leaflet-popup-content .pdate{color:#6b6860;font-size:12px;margin-bottom:9px}
 .leaflet-popup-content .plabel{font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:#6b6860;margin:9px 0 4px}
@@ -129,10 +129,16 @@ footer{padding:60px 0;color:var(--ink-faint);font-size:13px}
 .leaflet-popup-content .pmeta{color:#6b6860;font-size:12px;margin-top:8px}
 .leaflet-popup-content .pmsg{color:#3a3833;font-size:12px;margin-top:8px;font-style:italic}
 .leaflet-container a.leaflet-popup-close-button{color:#6b6860}
-.leaflet-popup-content .pnav{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid #dcdcdc}
-.leaflet-popup-content .pnav-count{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#6b6860}
-.leaflet-popup-content .pnav-btn{width:24px;height:24px;padding:0;border:1px solid #dcdcdc;background:#fff;color:#1a1916;font-size:15px;line-height:1;cursor:pointer;border-radius:0}
-.leaflet-popup-content .pnav-btn:hover{border-color:#9c7b3e;color:#9c7b3e}
+.leaflet-popup-content .plist{margin:2px 0 0}
+.leaflet-popup-content .plist-head{font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:#6b6860;margin-bottom:8px}
+.leaflet-popup-content .plist-item{display:block;width:100%;text-align:left;border:1px solid #dcdcdc;background:#fff;padding:8px 9px;margin-bottom:7px;cursor:pointer;border-radius:0;font-family:inherit}
+.leaflet-popup-content .plist-item:hover{border-color:#9c7b3e}
+.leaflet-popup-content .plist-strip{display:flex;height:13px;border:1px solid #dcdcdc;margin-bottom:6px}
+.leaflet-popup-content .plist-strip span{display:block}
+.leaflet-popup-content .plist-meta{font-size:11px;color:#6b6860;line-height:1.35}
+.leaflet-popup-content .plist-msg{font-size:11px;color:#3a3833;font-style:italic;margin-top:3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.leaflet-popup-content .pback{display:inline-block;border:none;background:none;padding:0;margin-bottom:9px;color:#6b6860;font-size:11px;letter-spacing:.06em;text-transform:uppercase;cursor:pointer;font-family:inherit;border-bottom:1px solid #dcdcdc}
+.leaflet-popup-content .pback:hover{color:#9c7b3e;border-color:#9c7b3e}
 .marker-strip{display:flex;width:42px;height:16px;border:1px solid #6b6860;box-shadow:0 1px 4px rgba(0,0,0,.25)}
 .marker-strip span{display:block;height:100%}
 </style>
@@ -729,34 +735,73 @@ function popupHTML(d){
     ${imgs}
     <div class="pmeta">Sky ${Math.round(d.sky_pct)}% · Earth ${Math.round(d.earth_pct)}%</div>${msg}`;
 }
-/* Submissions landing on the same grid cell share one marker. The popup pages
-   through them, newest first, so repeat visits to a place stack up instead of
-   hiding one another behind the pin that happens to be drawn last. */
-const cells=new Map();          // "lat,lng" -> {key, marker, items:[], idx}
+/* Submissions landing on the same grid cell share one marker. Clicking the pin
+   lists every palette recorded there, newest first; clicking one opens it in
+   full with its message. A single-palette place opens straight to detail. */
+const cells=new Map();          // "lat,lng" -> {key, marker, items:[], view, sel}
 function cellKey(d){ return `${(+d.grid_lat).toFixed(4)},${(+d.grid_lng).toFixed(4)}`; }
-function cellPopupHTML(cell,i){
-  const d=cell.items[i], n=cell.items.length;
-  let nav="";
-  if(n>1){
-    nav=`<div class="pnav">
-      <button type="button" class="pnav-btn" data-cell="${cell.key}" data-to="${(i-1+n)%n}" aria-label="Previous palette">&#8249;</button>
-      <span class="pnav-count">${i+1} / ${n} palettes here</span>
-      <button type="button" class="pnav-btn" data-cell="${cell.key}" data-to="${(i+1)%n}" aria-label="Next palette">&#8250;</button>
+function esc(s){ return String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
+function shortDate(s){
+  if(!s)return "";
+  const d=new Date(s); if(isNaN(d))return "";
+  return d.toLocaleDateString(undefined,{year:"numeric",month:"short",day:"numeric"});
+}
+// Compact one-line preview of a submission, used as a row in the list.
+function listItemHTML(cell,i){
+  const d=cell.items[i];
+  const bins=(d.palette_data&&d.palette_data.bins)||[];
+  const bits=[shortDate(d.created_at), d.time_of_day].filter(Boolean).join(" \u00b7 ");
+  const msg=d.message?`<div class="plist-msg">\u201c${esc(d.message)}\u201d</div>`:"";
+  return `<button type="button" class="plist-item" data-cell="${esc(cell.key)}" data-open="${i}">
+    <div class="plist-strip">${stripSpans(bins)}</div>
+    <div class="plist-meta">${esc(bits)}</div>
+    ${msg}
+  </button>`;
+}
+function cellListHTML(cell){
+  const n=cell.items.length;
+  const rows=cell.items.map((_,i)=>listItemHTML(cell,i)).join("");
+  const place=esc(cell.items[0].place||"Untitled");
+  const country=esc(cell.items[0].country||"");
+  return `<h4>${place}</h4>
+    <div class="pdate">${country}</div>
+    <div class="plist">
+      <div class="plist-head">${n} palette${n===1?"":"s"} recorded here</div>
+      ${rows}
     </div>`;
-  }
-  return nav+popupHTML(d);
 }
-function showCell(key,i){
+function cellDetailHTML(cell,i){
+  const back=cell.items.length>1
+    ? `<button type="button" class="pback" data-cell="${esc(cell.key)}" data-back="1">\u2039 All ${cell.items.length} palettes</button>`
+    : "";
+  return back+popupHTML(cell.items[i]);
+}
+function renderCell(cell){
+  return cell.view==="detail" ? cellDetailHTML(cell,cell.sel) : cellListHTML(cell);
+}
+function refreshCell(key){
   const cell=cells.get(key); if(!cell)return;
-  cell.idx=i;
-  cell.marker.setPopupContent(cellPopupHTML(cell,i));
+  cell.marker.setPopupContent(renderCell(cell));
 }
-// Popup content is re-rendered on every page turn, so the arrows are bound by
-// delegation rather than per-button.
-document.addEventListener("click",e=>{
-  const b=e.target.closest&&e.target.closest(".pnav-btn"); if(!b)return;
-  e.preventDefault(); e.stopPropagation();
-  showCell(b.dataset.cell, parseInt(b.dataset.to,10));
+function openCellList(key){
+  const cell=cells.get(key); if(!cell)return;
+  cell.view="list"; refreshCell(key);
+}
+function openCellDetail(key,i){
+  const cell=cells.get(key); if(!cell)return;
+  cell.view="detail"; cell.sel=i; refreshCell(key);
+}
+// Popup markup is regenerated on every view change, so clicks are handled by
+// delegation on the document rather than bound to individual buttons.
+document.addEventListener("click",function(e){
+  const t=e.target;
+  if(!t||!t.closest)return;
+  const open=t.closest(".plist-item");
+  if(open){ e.preventDefault(); e.stopPropagation();
+    openCellDetail(open.getAttribute("data-cell"), parseInt(open.getAttribute("data-open"),10)); return; }
+  const back=t.closest(".pback");
+  if(back){ e.preventDefault(); e.stopPropagation();
+    openCellList(back.getAttribute("data-cell")); return; }
 });
 function addMarker(d,fly){
   if(!atlasMap)return;
@@ -765,19 +810,24 @@ function addMarker(d,fly){
   if(cell){
     cell.items.unshift(d);                       // newest first
     cell.marker.setIcon(markerIcon((d.palette_data&&d.palette_data.bins)||[]));
-    showCell(key,0);
+    // A second palette here means the list view becomes meaningful.
+    cell.view = cell.items.length>1 ? "list" : "detail";
+    cell.sel=0;
+    refreshCell(key);
   }else{
     const bins=(d.palette_data&&d.palette_data.bins)||[];
     const m=L.marker([d.grid_lat,d.grid_lng],{icon:markerIcon(bins)}).addTo(atlasMap);
-    cell={key,marker:m,items:[d],idx:0};
+    cell={key,marker:m,items:[d],view:"detail",sel:0};
     cells.set(key,cell);
-    m.bindPopup(cellPopupHTML(cell,0),{maxWidth:300});
-    m.on("popupopen",()=>m.setPopupContent(cellPopupHTML(cell,cell.idx)));
+    m.bindPopup(renderCell(cell),{maxWidth:300});
+    m.on("popupopen",()=>m.setPopupContent(renderCell(cell)));
   }
   if(fly){
-    showCell(key,0);
+    const c=cells.get(key);
+    // Jump straight to the palette just added, not the list.
+    c.view="detail"; c.sel=0; refreshCell(key);
     atlasMap.flyTo([d.grid_lat,d.grid_lng],Math.max(atlasMap.getZoom(),6),{duration:1.1});
-    setTimeout(()=>cells.get(key).marker.openPopup(),900);
+    setTimeout(()=>c.marker.openPopup(),900);
   }
 }
 const SEED=[
